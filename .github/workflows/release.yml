@@ -50,7 +50,9 @@ jobs:
                 overwrite: true
 
             - name: Create installer
-              run: dotnet build -p:Version=${{ env.TAG }} -c Release build/windows/installer/Installer.wixproj --output installer
+              run: |
+                set VERSION=
+                dotnet build -p:Version=${{ env.TAG }} -c Release build/windows/installer/Installer.wixproj --output installer
 
             - name: Upload artifact to release
               uses: svenstaro/upload-release-action@v2
