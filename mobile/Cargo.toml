@@ -1,0 +1,28 @@
+[package]
+name = "mobile"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "mobile"
+crate-type = ["staticlib", "cdylib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = "0.13"
+
+[package.metadata.android]
+package = "org.shenmian.sokoban"
+apk_name = "sokoban-rs"
+assets = "../assets"
+strip = "strip"
+resources = "../build/android/res"
+build_targets = ["aarch64-linux-android"]
+
+[package.metadata.android.sdk]
+target_sdk_version = 33
+
+[package.metadata.android.application]
+icon = "@mipmap/icon"
+label = "Sokoban"

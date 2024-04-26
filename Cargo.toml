@@ -1,0 +1,15 @@
+[package]
+name = "soukoban-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = ["mobile"]
+
+[dependencies]
+bevy = "0.13"
+image = "0.25"
+
+winit = "0.29" # The version needs to be consistent with the one used in bevy
