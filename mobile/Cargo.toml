@@ -11,6 +11,7 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 bevy = "0.13"
+soukoban-rs = { path = ".." }
 
 [package.metadata.android]
 package = "org.shenmian.sokoban"

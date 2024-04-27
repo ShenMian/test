@@ -2601,6 +2601,7 @@ name = "mobile"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "soukoban-rs",
 ]
 
 [[package]]
