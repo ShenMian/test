@@ -1,0 +1,164 @@
+name: Build
+
+on: [push, pull_request]
+
+env:
+    EXECUTABLE_NAME: soukoban-rs
+    OSX_APP_NAME: Sokoban
+
+jobs:
+    build-windows:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@stable
+
+            - name: Build
+              run: cargo build --release
+
+            - name: Pack
+              uses: vimtor/action-zip@v1
+              with:
+                files: assets target/release/${{ env.EXECUTABLE_NAME }}.exe
+                dest: sokoban-windows.zip
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: sokoban-windows.zip
+                  path: sokoban-windows.zip
+
+            # - name: Create installer
+            #   run: |
+            #     set VERSION=
+            #     dotnet build -p:Version=${{ env.TAG }} -c Release build/windows/installer/Installer.wixproj --output installer
+
+            # - name: Upload artifact to release
+            #   uses: svenstaro/upload-release-action@v2
+            #   with:
+            #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+            #     file: installer/en-US/installer.msi
+            #     asset_name: sokoban-windows.msi
+            #     tag: ${{ env.TAG }}
+            #     overwrite: true
+
+    build-linux:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@stable
+
+            - name: Install dependencies
+              run: |
+                sudo apt-get update
+                sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev
+
+            - name: Build
+              run: cargo build --release
+
+            - name: Pack
+              run: |
+                chmod +x target/release/${{ env.EXECUTABLE_NAME }}
+                mv target/release/${{ env.EXECUTABLE_NAME }} .
+                tar -czf sokoban-linux.tar.gz ${{ env.EXECUTABLE_NAME }} assets
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: sokoban-linux.tar.gz
+                  path: sokoban-linux.tar.gz
+
+    build-macos:
+        runs-on: macos-latest
+        env:
+            MACOSX_DEPLOYMENT_TARGET: 11.0
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                targets: aarch64-apple-darwin, x86_64-apple-darwin
+
+            - name: Build (ARM)
+              run: SDKROOT=$(xcrun -sdk macosx --show-sdk-path) cargo build --release --target=aarch64-apple-darwin
+
+            - name: Build (x64)
+              run: SDKROOT=$(xcrun -sdk macosx --show-sdk-path) cargo build --release --target=x86_64-apple-darwin
+
+            - name: Create universal binary
+              run: lipo -create -output target/release/${{ env.EXECUTABLE_NAME }} target/aarch64-apple-darwin/release/${{ env.EXECUTABLE_NAME }} target/x86_64-apple-darwin/release/${{ env.EXECUTABLE_NAME }}
+
+            - name: Pack
+              run: |
+                mkdir -p build/macos/src/Game.app/Contents/MacOS/assets
+                cp -r assets/ build/macos/src/Game.app/Contents/MacOS/assets
+                cp target/release/${{ env.EXECUTABLE_NAME }} build/macos/src/Game.app/Contents/MacOS/
+                mv build/macos/src/Game.app build/macos/src/${{ env.OSX_APP_NAME }}.app
+                ln -s /Applications build/macos/src/
+                hdiutil create -fs HFS+ -volname "${{ env.OSX_APP_NAME }}" -srcfolder build/macos/src sokoban-macos.dmg
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: sokoban-macos.dmg
+                  path: sokoban-macos.dmg
+
+    build-android:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@stable
+
+            - name: Add rustup target(s)
+              run: rustup target add aarch64-linux-android
+
+            - name: Install cargo-apk
+              run: cargo install --force cargo-apk
+
+            - name: Build
+              # Uses a debug build, since release builds require keystore configuration
+              run: ANDROID_NDK_ROOT=$ANDROID_NDK_LATEST_HOME cargo apk build --package mobile
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: sokoban-android.apk
+                  path: target/debug/apk/sokoban-rs.apk
+
+    build-wasm:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dtolnay/rust-toolchain@stable
+
+            - name: Install dependencies
+              run: |
+                sudo apt-get update
+                sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev
+
+            - name: Install trunk
+              uses: jetli/trunk-action@v0.4.0
+              with:
+                version: latest
+
+            - name: Add rustup target(s)
+              run: rustup target add wasm32-unknown-unknown
+
+            - name: Build
+              run: trunk build --release
+
+            - name: Optimize
+              uses: NiklasEi/wasm-opt-action@v2
+              with:
+                file: dist/*.wasm
+
+            - name: Pack
+              uses: vimtor/action-zip@v1.1
+              with:
+                files: dist/
+                dest: sokoban-wasm.zip
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: sokoban-wasm.zip
+                  path: sokoban-wasm.zip
