@@ -7,7 +7,7 @@ pub struct SokobanPlugin;
 
 impl Plugin for SokobanPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(DefaultPlugins);
+        // app.add_plugins(DefaultPlugins);
 
         // #[cfg(debug_assertions)]
         // app.add_plugins(performance_matrix::PerformanceMatrixPlugin);
