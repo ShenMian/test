@@ -7,8 +7,8 @@ pub struct SokobanPlugin;
 
 impl Plugin for SokobanPlugin {
     fn build(&self, app: &mut App) {
-        #[cfg(debug_assertions)]
-        app.add_plugins(performance_matrix::PerformanceMatrixPlugin);
+        // #[cfg(debug_assertions)]
+        // app.add_plugins(performance_matrix::PerformanceMatrixPlugin);
 
         app.add_systems(Startup, (systems::window::setup, systems::camera::setup));
     }
