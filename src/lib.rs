@@ -1,9 +1,7 @@
 use bevy::prelude::*;
 
+mod performance_matrix;
 mod systems;
-
-#[cfg(debug_assertions)]
-use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 
 pub struct SokobanPlugin;
 
@@ -12,8 +10,8 @@ impl Plugin for SokobanPlugin {
         app.add_plugins(DefaultPlugins);
 
         #[cfg(debug_assertions)]
-        app.add_plugins(FrameTimeDiagnosticsPlugin);
+        app.add_plugins(performance_matrix::PerformanceMatrixPlugin);
 
-        app.add_systems(Startup, systems::window::setup_window);
+        app.add_systems(Startup, (systems::window::setup, systems::camera::setup));
     }
 }

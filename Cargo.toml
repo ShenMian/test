@@ -11,5 +11,6 @@ members = ["mobile"]
 [dependencies]
 bevy = "0.13"
 image = "0.25"
+soukoban = { git = "https://github.com/ShenMian/soukoban" }
 
 winit = "0.29" # The version needs to be consistent with the one used in bevy
