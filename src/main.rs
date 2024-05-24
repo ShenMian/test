@@ -13,7 +13,7 @@ fn main() {
                 }),
                 ..default()
             }),
-            SokobanPlugin,
+            // SokobanPlugin,
         ))
         .run();
 }
