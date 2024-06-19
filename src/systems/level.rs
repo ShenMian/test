@@ -1,7 +1,10 @@
 use std::fs;
 
 use bevy::{prelude::*, utils::HashMap};
+use nalgebra::Vector2;
 use soukoban::Tiles;
+
+use crate::events;
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Level(soukoban::Level);
@@ -17,7 +20,7 @@ impl Default for LevelId {
 
 #[derive(Resource)]
 pub struct Tilesheet {
-    tile_size: Vec2,
+    pub tile_size: Vec2,
     tile_info: HashMap<Tiles, (usize, f32)>,
     handle: Handle<Image>,
     layout_handle: Handle<TextureAtlasLayout>,
@@ -58,6 +61,8 @@ pub fn respawn(
     level_id: Res<LevelId>,
     tilesheet: Res<Tilesheet>,
     query: Query<Entity, With<Level>>,
+    mut reset_camera_scale_events: EventWriter<events::ResetCameraScale>,
+    mut reset_camera_translate_events: EventWriter<events::ResetCameraTranslate>,
 ) {
     if let Ok(entity) = query.get_single() {
         commands.entity(entity).despawn_recursive();
@@ -68,19 +73,37 @@ pub fn respawn(
         level_id.0,
     )
     .unwrap();
-    commands.spawn(Level(level)).with_children(|parent| {
-        let z = 0.0;
-        let index = 0;
-        parent.spawn((SpriteSheetBundle {
-            atlas: TextureAtlas {
-                layout: tilesheet.layout_handle.clone(),
-                index,
-            },
-            texture: tilesheet.handle.clone(),
-            transform: Transform::from_xyz(0.0, 0.0, z),
-            ..default()
-        },));
-    });
+    commands
+        .spawn((Level(level.clone()), TransformBundle::default()))
+        .with_children(|parent| {
+            for y in 0..level.dimensions().y {
+                for x in 0..level.dimensions().x {
+                    let position = Vector2::new(x, y);
+                    if level[position].is_empty() {
+                        continue;
+                    }
+                    for tile in level[position] {
+                        let (index, z) = tilesheet.tile_info[&tile];
+                        parent.spawn(SpriteSheetBundle {
+                            atlas: TextureAtlas {
+                                layout: tilesheet.layout_handle.clone(),
+                                index,
+                            },
+                            texture: tilesheet.handle.clone(),
+                            transform: Transform::from_xyz(
+                                x as f32 * tilesheet.tile_size.x,
+                                -y as f32 * tilesheet.tile_size.y,
+                                z,
+                            ),
+                            ..default()
+                        });
+                    }
+                }
+            }
+        });
+
+    reset_camera_scale_events.send_default();
+    reset_camera_translate_events.send_default();
 
     println!("Level #{}", level_id.0)
 }
