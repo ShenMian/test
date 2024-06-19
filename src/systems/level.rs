@@ -105,5 +105,5 @@ pub fn respawn(
     reset_camera_scale_events.send_default();
     reset_camera_translate_events.send_default();
 
-    println!("Level #{}", level_id.0)
+    info!("Level #{}", level_id.0)
 }

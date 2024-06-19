@@ -45,7 +45,7 @@ pub fn handle_reset_camera_translate_event(
 
     let mut camera = camera.single_mut();
     camera.translation.x = (size.x - tilesheet.tile_size.x) / 2.0;
-    camera.translation.y = -(size.y - tilesheet.tile_size.y) / 2.0;
+    camera.translation.y = -((size.y - tilesheet.tile_size.y) / 2.0);
 }
 
 pub fn handle_window_resized_event(
