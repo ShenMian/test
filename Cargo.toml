@@ -12,5 +12,6 @@ members = ["mobile"]
 bevy = "0.13"
 image = "0.25"
 soukoban = { git = "https://github.com/ShenMian/soukoban" }
+nalgebra = "0.32"
 
 winit = "0.29" # The version needs to be consistent with the one used in bevy
