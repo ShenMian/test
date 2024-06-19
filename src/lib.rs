@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 
+mod events;
 mod performance_matrix;
 mod systems;
+
+use systems::level::LevelId;
 
 pub struct SokobanPlugin;
 
@@ -25,6 +28,7 @@ impl Plugin for SokobanPlugin {
             systems::level::respawn.run_if(resource_changed_or_removed::<LevelId>()),
         );
 
-        app.init_resource::<systems::level::Tilesheet>();
+        app.init_resource::<systems::level::Tilesheet>()
+            .init_resource::<LevelId>();
     }
 }

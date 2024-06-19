@@ -1,14 +1,19 @@
 use std::fs;
 
 use bevy::{prelude::*, utils::HashMap};
-use nalgebra::Vector2;
 use soukoban::Tiles;
+
+#[derive(Component, Deref, DerefMut)]
+pub struct Level(soukoban::Level);
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct LevelId(pub usize);
 
-#[derive(Component, Deref, DerefMut)]
-pub struct Level(soukoban::Level);
+impl Default for LevelId {
+    fn default() -> Self {
+        Self(1)
+    }
+}
 
 #[derive(Resource)]
 pub struct Tilesheet {
@@ -30,18 +35,10 @@ impl Default for Tilesheet {
         Self {
             tile_size: Vec2::new(128.0, 128.0),
             tile_info,
-            ..default()
+            handle: Handle::default(),
+            layout_handle: Handle::default(),
         }
     }
-}
-
-pub fn respawn(mut commands: Commands, level_id: Res<LevelId>) {
-    let level = Level::load_nth_from_string(
-        &fs::read_to_string("assets/levels/box_world_100.xsb").unwrap(),
-        level_id,
-    )
-    .unwrap();
-    commands.spawn(Level(level));
 }
 
 pub fn load_assets(
@@ -54,4 +51,36 @@ pub fn load_assets(
     let layout =
         TextureAtlasLayout::from_grid(tilesheet.tile_size, 6, 3, Some(Vec2::new(1.0, 1.0)), None);
     tilesheet.layout_handle = texture_atlas_layouts.add(layout);
+}
+
+pub fn respawn(
+    mut commands: Commands,
+    level_id: Res<LevelId>,
+    tilesheet: Res<Tilesheet>,
+    query: Query<Entity, With<Level>>,
+) {
+    if let Ok(entity) = query.get_single() {
+        commands.entity(entity).despawn_recursive();
+    }
+
+    let level = soukoban::Level::load_nth_from_string(
+        &fs::read_to_string("assets/levels/box_world_100.xsb").unwrap(),
+        level_id.0,
+    )
+    .unwrap();
+    commands.spawn(Level(level)).with_children(|parent| {
+        let z = 0.0;
+        let index = 0;
+        parent.spawn((SpriteSheetBundle {
+            atlas: TextureAtlas {
+                layout: tilesheet.layout_handle.clone(),
+                index,
+            },
+            texture: tilesheet.handle.clone(),
+            transform: Transform::from_xyz(0.0, 0.0, z),
+            ..default()
+        },));
+    });
+
+    println!("Level #{}", level_id.0)
 }
