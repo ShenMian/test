@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::WindowResized;
 
-use crate::events;
+use crate::events::*;
 use crate::systems::level::{Level, Tilesheet};
 
 /// Sets up the main 2D camera.
@@ -10,7 +10,7 @@ pub fn setup(mut commands: Commands) {
 }
 
 pub fn handle_reset_camera_scale_event(
-    mut events: EventReader<events::ResetCameraScale>,
+    mut events: EventReader<ResetCameraScale>,
     mut projection: Query<&mut OrthographicProjection>,
     tilesheet: Res<Tilesheet>,
     level: Query<&Level>,
@@ -33,7 +33,7 @@ pub fn handle_reset_camera_scale_event(
 }
 
 pub fn handle_reset_camera_translate_event(
-    mut events: EventReader<events::ResetCameraTranslate>,
+    mut events: EventReader<ResetCameraTranslate>,
     tilesheet: Res<Tilesheet>,
     level: Query<&Level>,
     mut camera: Query<&mut Transform, With<Camera>>,
@@ -50,7 +50,7 @@ pub fn handle_reset_camera_translate_event(
 
 pub fn handle_window_resized_event(
     mut events: EventReader<WindowResized>,
-    mut reset_camera_scale_events: EventWriter<events::ResetCameraScale>,
+    mut reset_camera_scale_events: EventWriter<ResetCameraScale>,
 ) {
     events.clear();
     reset_camera_scale_events.send_default();

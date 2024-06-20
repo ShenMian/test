@@ -1,10 +1,8 @@
-use std::fs;
-
 use bevy::{prelude::*, utils::HashMap};
 use nalgebra::Vector2;
 use soukoban::Tiles;
 
-use crate::events;
+use crate::events::*;
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Level(soukoban::Level);
@@ -61,18 +59,19 @@ pub fn respawn(
     level_id: Res<LevelId>,
     tilesheet: Res<Tilesheet>,
     query: Query<Entity, With<Level>>,
-    mut reset_camera_scale_events: EventWriter<events::ResetCameraScale>,
-    mut reset_camera_translate_events: EventWriter<events::ResetCameraTranslate>,
+    mut reset_camera_scale_events: EventWriter<ResetCameraScale>,
+    mut reset_camera_translate_events: EventWriter<ResetCameraTranslate>,
 ) {
     if let Ok(entity) = query.get_single() {
         commands.entity(entity).despawn_recursive();
     }
 
     let level = soukoban::Level::load_nth_from_string(
-        &fs::read_to_string("assets/levels/box_world_100.xsb").unwrap(),
+        std::include_str!("../../assets/levels/box_world_100.xsb"),
         level_id.0,
     )
     .unwrap();
+
     commands
         .spawn((Level(level.clone()), TransformBundle::default()))
         .with_children(|parent| {
