@@ -83,17 +83,17 @@ pub fn respawn(
                         continue;
                     }
                     for tile in level[position] {
-                        let (index, z) = tilesheet.tile_info[&tile];
+                        let (sprite_index, z_order) = tilesheet.tile_info[&tile];
                         parent.spawn(SpriteSheetBundle {
                             atlas: TextureAtlas {
                                 layout: tilesheet.layout_handle.clone(),
-                                index,
+                                index: sprite_index,
                             },
                             texture: tilesheet.handle.clone(),
                             transform: Transform::from_xyz(
                                 x as f32 * tilesheet.tile_size.x,
-                                -y as f32 * tilesheet.tile_size.y,
-                                z,
+                                -y as f32 * tilesheet.tile_size.y, // Quadrant 4
+                                z_order,
                             ),
                             ..default()
                         });
