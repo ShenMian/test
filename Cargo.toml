@@ -9,9 +9,9 @@ edition = "2021"
 members = ["mobile"]
 
 [dependencies]
-bevy = "0.13"
+bevy = "0.14"
 image = "0.25"
 soukoban = { git = "https://github.com/ShenMian/soukoban" }
-nalgebra = "0.32"
+nalgebra = "0.33"
 
-winit = "0.29" # The version needs to be consistent with the one used in bevy
+winit = "0.30" # The version needs to be consistent with the one used in bevy

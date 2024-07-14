@@ -1,8 +1,10 @@
-use bevy::{prelude::*, utils::HashMap};
+use std::collections::HashMap;
+
+use bevy::prelude::*;
 use nalgebra::Vector2;
 use soukoban::Tiles;
 
-use crate::events::*;
+use crate::systems::camera::*;
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Level(soukoban::Level);
@@ -18,7 +20,7 @@ impl Default for LevelId {
 
 #[derive(Resource)]
 pub struct Tilesheet {
-    pub tile_size: Vec2,
+    pub tile_size: UVec2,
     tile_info: HashMap<Tiles, (usize, f32)>,
     handle: Handle<Image>,
     layout_handle: Handle<TextureAtlasLayout>,
@@ -34,7 +36,7 @@ impl Default for Tilesheet {
             (Tiles::Player, (0, 4.0)),
         ]);
         Self {
-            tile_size: Vec2::new(128.0, 128.0),
+            tile_size: UVec2::new(128, 128),
             tile_info,
             handle: Handle::default(),
             layout_handle: Handle::default(),
@@ -48,9 +50,9 @@ pub fn load_assets(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     tilesheet.handle = asset_server.load("textures/tilesheet.png");
-    tilesheet.tile_size = Vec2::new(128.0, 128.0);
+    tilesheet.tile_size = UVec2::new(128, 128);
     let layout =
-        TextureAtlasLayout::from_grid(tilesheet.tile_size, 6, 3, Some(Vec2::new(1.0, 1.0)), None);
+        TextureAtlasLayout::from_grid(tilesheet.tile_size, 6, 3, Some(UVec2::new(1, 1)), None);
     tilesheet.layout_handle = texture_atlas_layouts.add(layout);
 }
 
@@ -83,19 +85,20 @@ pub fn respawn(
                     }
                     for tile in level[position] {
                         let (sprite_index, z_order) = tilesheet.tile_info[&tile];
-                        parent.spawn(SpriteSheetBundle {
-                            atlas: TextureAtlas {
-                                layout: tilesheet.layout_handle.clone(),
-                                index: sprite_index,
-                            },
+                        parent.spawn((
+                            SpriteBundle {
                             texture: tilesheet.handle.clone(),
                             transform: Transform::from_xyz(
-                                x as f32 * tilesheet.tile_size.x,
-                                -y as f32 * tilesheet.tile_size.y, // Quadrant 4
+                                x as f32 * tilesheet.tile_size.x as f32,
+                                -y as f32 * tilesheet.tile_size.y as f32, // Quadrant 4
                                 z_order,
                             ),
                             ..default()
-                        });
+                        },TextureAtlas {
+                            layout: tilesheet.layout_handle.clone(),
+                            index: sprite_index,
+                        },
+                        ));
                     }
                 }
             }
