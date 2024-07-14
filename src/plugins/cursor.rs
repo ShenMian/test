@@ -24,7 +24,7 @@ impl Plugin for CursorPlugin {
 enum CursorIcon {
     #[default]
     Default,
-    Pointer,
+    // Pointer,
 }
 
 #[derive(Component, Deref, DerefMut, Default)]
