@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use bevy::{prelude::*, window::WindowResized};
 
 mod plugins;
@@ -7,7 +5,6 @@ mod systems;
 
 use plugins::*;
 
-use cursor::IconPath;
 use systems::level::{LevelId, Tilesheet};
 
 pub struct SokobanPlugin;
@@ -15,14 +12,10 @@ pub struct SokobanPlugin;
 impl Plugin for SokobanPlugin {
     fn build(&self, app: &mut App) {
         // #[cfg(debug_assertions)]
-        app.add_plugins(performance_matrix::PerformanceMatrixPlugin);
-
-        app.add_plugins(cursor::CursorPlugin {
-            config: IconPath {
-                default_icon_path: PathBuf::from("textures/cursor/Outline/Default/pointer_b.png"),
-                pointer_icon_path: PathBuf::from("textures/cursor/Outline/Default/hand_point.png"),
-            },
-        });
+        app.add_plugins((
+            performance_matrix::PerformanceMatrixPlugin,
+            version_information::VersionInformationPlugin,
+        ));
 
         app.add_systems(
             Startup,
