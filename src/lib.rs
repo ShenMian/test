@@ -11,8 +11,8 @@ pub struct SokobanPlugin;
 
 impl Plugin for SokobanPlugin {
     fn build(&self, app: &mut App) {
-        // #[cfg(debug_assertions)]
         app.add_plugins((
+            // #[cfg(debug_assertions)]
             performance_matrix::PerformanceMatrixPlugin,
             version_information::VersionInformationPlugin,
         ));

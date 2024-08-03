@@ -23,8 +23,8 @@ pub fn handle_reset_camera_scale_event(
 ) {
     events.clear();
 
-    let level = level.single();
-    let size = tilesheet.tile_size.x as f32 * level.dimensions().map(|x| x as f32);
+    let map = (*level.single()).map();
+    let size = tilesheet.tile_size.x as f32 * map.dimensions().map(|x| x as f32);
 
     let window = window.single();
     let width_scale = size.x / window.resolution.width();
@@ -45,8 +45,8 @@ pub fn handle_reset_camera_translate_event(
 ) {
     events.clear();
 
-    let level = level.single();
-    let size = tilesheet.tile_size.x as f32 * level.dimensions().map(|x| x as f32);
+    let map = (*level.single()).map();
+    let size = tilesheet.tile_size.x as f32 * map.dimensions().map(|x| x as f32);
 
     let mut camera = camera.single_mut();
     camera.translation.x = (size.x - tilesheet.tile_size.x as f32) / 2.0;

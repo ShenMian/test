@@ -73,31 +73,33 @@ pub fn respawn(
         level_id.0,
     )
     .unwrap();
+    let map = level.map();
 
     commands
         .spawn((Level(level.clone()), TransformBundle::default()))
         .with_children(|parent| {
-            for y in 0..level.dimensions().y {
-                for x in 0..level.dimensions().x {
+            for y in 0..map.dimensions().y {
+                for x in 0..map.dimensions().x {
                     let position = Vector2::new(x, y);
-                    if level[position].is_empty() {
+                    if map[position].is_empty() {
                         continue;
                     }
-                    for tile in level[position] {
+                    for tile in map[position] {
                         let (sprite_index, z_order) = tilesheet.tile_info[&tile];
                         parent.spawn((
                             SpriteBundle {
-                            texture: tilesheet.handle.clone(),
-                            transform: Transform::from_xyz(
-                                x as f32 * tilesheet.tile_size.x as f32,
-                                -y as f32 * tilesheet.tile_size.y as f32, // Quadrant 4
-                                z_order,
-                            ),
-                            ..default()
-                        },TextureAtlas {
-                            layout: tilesheet.layout_handle.clone(),
-                            index: sprite_index,
-                        },
+                                texture: tilesheet.handle.clone(),
+                                transform: Transform::from_xyz(
+                                    x as f32 * tilesheet.tile_size.x as f32,
+                                    -y as f32 * tilesheet.tile_size.y as f32, // Quadrant 4
+                                    z_order,
+                                ),
+                                ..default()
+                            },
+                            TextureAtlas {
+                                layout: tilesheet.layout_handle.clone(),
+                                index: sprite_index,
+                            },
                         ));
                     }
                 }
