@@ -11,7 +11,7 @@ pub struct ResetCameraTranslate;
 
 /// Sets up the main 2D camera.
 pub fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d);
 }
 
 pub fn handle_reset_camera_scale_event(

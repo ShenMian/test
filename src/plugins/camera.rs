@@ -16,9 +16,9 @@ impl Plugin for CameraPlugin {
         app.add_systems(
             Update,
             (
-                handle_window_resized_event.run_if(on_event::<WindowResized>()),
-                handle_reset_camera_scale_event.run_if(on_event::<ResetCameraScale>()),
-                handle_reset_camera_translate_event.run_if(on_event::<ResetCameraTranslate>()),
+                handle_window_resized_event.run_if(on_event::<WindowResized>),
+                handle_reset_camera_scale_event.run_if(on_event::<ResetCameraScale>),
+                handle_reset_camera_translate_event.run_if(on_event::<ResetCameraTranslate>),
             )
                 .chain(),
         );
@@ -29,7 +29,7 @@ impl Plugin for CameraPlugin {
 
 /// Sets up the main 2D camera.
 pub fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d);
 }
 
 pub fn handle_reset_camera_scale_event(

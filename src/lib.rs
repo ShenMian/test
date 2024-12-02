@@ -28,12 +28,12 @@ impl Plugin for SokobanPlugin {
         app.add_systems(
             Update,
             (
-                systems::level::respawn.run_if(resource_changed_or_removed::<LevelId>()),
-                systems::camera::handle_window_resized_event.run_if(on_event::<WindowResized>()),
+                systems::level::respawn.run_if(resource_changed_or_removed::<LevelId>),
+                systems::camera::handle_window_resized_event.run_if(on_event::<WindowResized>),
                 systems::camera::handle_reset_camera_scale_event
-                    .run_if(on_event::<systems::camera::ResetCameraScale>()),
+                    .run_if(on_event::<systems::camera::ResetCameraScale>),
                 systems::camera::handle_reset_camera_translate_event
-                    .run_if(on_event::<systems::camera::ResetCameraTranslate>()),
+                    .run_if(on_event::<systems::camera::ResetCameraTranslate>),
             )
                 .chain(),
         );

@@ -76,7 +76,11 @@ pub fn respawn(
     let map = level.map();
 
     commands
-        .spawn((Level(level.clone()), TransformBundle::default()))
+        .spawn((
+            Level(level.clone()),
+            Transform::default(),
+            Visibility::default(),
+        ))
         .with_children(|parent| {
             for y in 0..map.dimensions().y {
                 for x in 0..map.dimensions().x {
@@ -86,20 +90,17 @@ pub fn respawn(
                     }
                     for tile in map[position] {
                         let (sprite_index, z_order) = tilesheet.tile_info[&tile];
+                        let atlas = TextureAtlas {
+                            layout: tilesheet.layout_handle.clone(),
+                            index: sprite_index,
+                        };
                         parent.spawn((
-                            SpriteBundle {
-                                texture: tilesheet.handle.clone(),
-                                transform: Transform::from_xyz(
-                                    x as f32 * tilesheet.tile_size.x as f32,
-                                    -y as f32 * tilesheet.tile_size.y as f32, // Quadrant 4
-                                    z_order,
-                                ),
-                                ..default()
-                            },
-                            TextureAtlas {
-                                layout: tilesheet.layout_handle.clone(),
-                                index: sprite_index,
-                            },
+                            Sprite::from_atlas_image(tilesheet.handle.clone(), atlas),
+                            Transform::from_xyz(
+                                x as f32 * tilesheet.tile_size.x as f32,
+                                -y as f32 * tilesheet.tile_size.y as f32, // Quadrant 4
+                                z_order,
+                            ),
                         ));
                     }
                 }

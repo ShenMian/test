@@ -9,7 +9,7 @@ edition = "2021"
 members = ["mobile"]
 
 [dependencies]
-bevy = "0.14"
+bevy = "0.15"
 image = "0.25"
 soukoban = { git = "https://github.com/ShenMian/soukoban" }
 nalgebra = "0.33"
