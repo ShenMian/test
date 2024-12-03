@@ -15,57 +15,45 @@ impl Plugin for PerformanceMatrixPlugin {
 }
 
 #[derive(Component)]
-#[require(Text)]
-pub struct PerformanceCounter;
+#[require(Text, Node)]
+pub struct PerformanceMatrix;
 
+/// Sets up the performance matrix on the screen.
 fn setup(mut commands: Commands) {
-    // commands.spawn(PerformanceBundle::new());
     const ALPHA: f32 = 0.8;
-    commands
-        .spawn((
-            PerformanceCounter,
-            Node {
-                position_type: PositionType::Absolute,
-                top: Val::Px(5.0),
-                left: Val::Px(5.0),
-                ..default()
-            },
-        ))
-        .with_child((
-            TextSpan::new("FPS     : "),
-            TextFont::from_font_size(14.0),
-            TextColor(AQUA.with_alpha(ALPHA).into()),
-        ))
-        .with_child((
-            TextSpan::new("\n"),
-            TextFont::from_font_size(14.0),
-            TextColor(Color::default().with_alpha(ALPHA)),
-        ))
-        .with_child((
-            TextSpan::new("FPS(SMA): "),
-            TextFont::from_font_size(14.0),
-            TextColor(AQUA.with_alpha(ALPHA).into()),
-        ))
-        .with_child((
-            TextSpan::new("\n"),
-            TextFont::from_font_size(14.0),
-            TextColor(Color::default().with_alpha(ALPHA)),
-        ))
-        .with_child((
-            TextSpan::new("FPS(EMA): "),
-            TextFont::from_font_size(14.0),
-            TextColor(AQUA.with_alpha(ALPHA).into()),
-        ))
-        .with_child((
-            TextSpan::new("\n"),
-            TextFont::from_font_size(14.0),
-            TextColor(Color::default().with_alpha(ALPHA)),
-        ));
+    const FONT_SIZE: f32 = 12.0;
+
+    let mut entity = commands.spawn((
+        PerformanceMatrix,
+        Name::new("Performance matrix"),
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(5.0),
+            left: Val::Px(5.0),
+            ..default()
+        },
+    ));
+
+    let metrics = ["FPS     : ", "FPS(SMA): ", "FPS(EMA): "];
+    metrics.into_iter().for_each(|text| {
+        entity
+            .with_child((
+                TextSpan::new(text),
+                TextFont::from_font_size(FONT_SIZE),
+                TextColor(AQUA.with_alpha(ALPHA).into()),
+            ))
+            .with_child((
+                TextSpan::new("\n"),
+                TextFont::from_font_size(FONT_SIZE),
+                TextColor(Color::default().with_alpha(ALPHA)),
+            ));
+    });
 }
 
+/// Updates the performance matrix on the screen.
 fn update(
     diagnostics: Res<DiagnosticsStore>,
-    query: Query<Entity, With<PerformanceCounter>>,
+    query: Query<Entity, With<PerformanceMatrix>>,
     mut writer: TextUiWriter,
 ) {
     let text = query.single();
