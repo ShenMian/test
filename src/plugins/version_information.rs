@@ -18,8 +18,8 @@ fn setup(mut commands: Commands) {
     const FONT_SIZE: f32 = 12.0;
 
     commands.spawn((
-        VersionInformation,
         Name::new("Version information"),
+        VersionInformation,
         Text::new("version: ".to_string() + env!("CARGO_PKG_VERSION")),
         TextFont::from_font_size(FONT_SIZE),
         TextColor(GRAY.with_alpha(ALPHA).into()),

@@ -24,8 +24,8 @@ fn setup(mut commands: Commands) {
     const FONT_SIZE: f32 = 12.0;
 
     let mut entity = commands.spawn((
-        PerformanceMatrix,
         Name::new("Performance matrix"),
+        PerformanceMatrix,
         Node {
             position_type: PositionType::Absolute,
             top: Val::Px(5.0),
